@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8
+    container_name: iot_mysql
+
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: monitoreo
+      MYSQL_USER: api_user
+      MYSQL_PASSWORD: api_pass
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  php:
+    build: ./docker/php
+    container_name: iot_php
+
+    volumes:
+      - ./api:/var/www/html
+
+    ports:
+      - "8080:80"
+
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
