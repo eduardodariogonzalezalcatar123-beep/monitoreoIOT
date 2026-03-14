@@ -13,7 +13,7 @@ Prueba de lectura de sensor
 */
 
 $id_sensor = 1;
-$valor = 25;
+$valor = 100;
 
 $resultado = $alertService->processReading($id_sensor,$valor);
 

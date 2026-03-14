@@ -43,7 +43,12 @@ class AlertService {
         );
 
         // actualizar ultima lectura
-        $this->sensorModel->updateLastReading($id_sensor,$valor);
+        $this->sensorModel->updateLastReading(
+    $id_sensor,
+    $valor,
+    $resultado["estado"]
+);
+
 
         // generar alerta si aplica
         if($resultado["estado"] !== "normal"){
