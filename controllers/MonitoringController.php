@@ -15,4 +15,8 @@ class MonitoringController {
     {
         return $this->monitoringService->getDashboard();
     }
+
+    public function getHistory(){
+        return $this->monitoringService->getHistory();
+    }
 }

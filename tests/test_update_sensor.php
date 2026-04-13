@@ -3,9 +3,9 @@
 $url = "http://localhost/api/sensors.php";
 
 $data = [
-    "id_sensor" => 2,
-    "limite_min" => 55,
-    "limite_max" => 35
+    "id_sensor" => 1,
+    "limite_min" => 60,
+    "limite_max" => 30
 ];
 
 $options = [
