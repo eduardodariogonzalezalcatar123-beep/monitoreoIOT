@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial Sensores</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Estilos rápidos por si no tienes definidos estos en tu CSS */
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-align: center;
+            display: inline-block;
+        }
+        .normal { background-color: #d4edda; color: #155724; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .critical { background-color: #f8d7da; color: #721c24; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Historial de Sensores</h1>
+    </header>
+
+    <div class="historial-container">
+        <div class="historial-card">
+            <h2>Historial de Lecturas</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Sensor</th>
+                        <th>Valor</th>
+                        <th>Tipo de alerta</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-historial">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">Cargando historial...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br>
+            <a href="../index.html">
+                <button class="btn secondary">Regresar</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Configura aquí la URL de tu archivo PHP del historial
+        const API_URL = "http://localhost:8080/api/history.php";
+
+        async function cargarHistorial() {
+            const tabla = document.getElementById("tabla-historial");
+
+            try {
+                const response = await fetch(API_URL);
+                
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+
+                const datos = await response.json();
+
+                // Limpiamos la tabla
+                tabla.innerHTML = "";
+
+                if (datos.length === 0) {
+                    tabla.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No hay registros disponibles</td></tr>";
+                    return;
+                }
+
+                datos.forEach(registro => {
+                    const tr = document.createElement("tr");
+
+                    // Formatear Fecha y Hora (asumiendo que viene de un campo MySQL datetime)
+                    const dt = new Date(registro.fecha_hora);
+                    const fecha = dt.toLocaleDateString('es-ES');
+                    const hora = dt.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+                    // Definir clase de color según la alerta
+                    let claseAlerta = "normal";
+                    const alerta = (registro.estado_calculado || "").toLowerCase();
+                    
+                    if (alerta.includes("advertencia") || alerta.includes("warning")) {
+                        claseAlerta = "warning";
+                    } else if (alerta.includes("crítico") || alerta.includes("critical") || alerta.includes("peligro")) {
+                        claseAlerta = "critical";
+                    }
+
+                    tr.innerHTML = `
+                        <td>${fecha}</td>
+                        <td>${hora}</td>
+                        <td>${registro.nombre_sensor || registro.id_sensor}</td>
+                        <td>${registro.valor}</td>
+                        <td><span class="status ${claseAlerta}">${registro.tipo_alerta}</span></td>
+                    `;
+                    
+                    tabla.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error("Error:", error);
+                tabla.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Error al cargar el historial</td></tr>";
+            }
+        }
+
+        // Llamar a la función al cargar la página
+        document.addEventListener("DOMContentLoaded", cargarHistorial);
+    </script>
+
+</body>
+</html>

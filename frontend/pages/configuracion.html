@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+
+<!-- ✅ RESPONSIVE -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Configuración Sensor</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<!-- 🔥 TOAST -->
+<div id="toast" class="toast"></div>
+
+<header>
+<h1>Configuración del Sensor</h1>
+</header>
+
+<div class="config-wrapper">
+
+<div class="config-card">
+
+<h2 id="tituloSensor">Cargando...</h2>
+
+<div class="field">
+<div class="label">Rango permitido</div>
+
+<div class="inputs">
+<input id="min" placeholder="Mínimo">
+<input id="max" placeholder="Máximo">
+</div>
+</div>
+
+<div class="actions">
+
+<button id="btnGuardar" class="btn primary" onclick="guardar()">
+Guardar configuración
+</button>
+
+<a href="../index.html">
+<button class="btn secondary">Regresar</button>
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+
+const API = "http://localhost:8080/api/sensors.php";
+
+
+const params = new URLSearchParams(window.location.search);
+const idSensor = params.get("id");
+
+
+function mostrarToast(mensaje, tipo = "success") {
+    const toast = document.getElementById("toast");
+    
+    toast.className = "toast"; // Limpiar clases
+    if(tipo === "error") toast.classList.add("error");
+    
+    toast.innerHTML = mensaje;
+    toast.classList.add("show");
+
+    // En el centro suele ser mejor dejarlo 2 o 2.5 segundos
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2500);
+}
+
+// 🔄 CARGAR DATOS
+async function cargar() {
+
+    if(!idSensor){
+        mostrarToast("No se especificó sensor ❌", "error");
+        return;
+    }
+
+    try {
+        const res = await fetch(API);
+        const sensores = await res.json();
+
+        const sensor = sensores.find(s => s.id_sensor == idSensor);
+
+        if(sensor){
+            document.getElementById("tituloSensor").innerText = sensor.nombre;
+            document.getElementById("min").value = sensor.limite_min || "";
+            document.getElementById("max").value = sensor.limite_max || "";
+        } else {
+            document.getElementById("tituloSensor").innerText = "Sensor no encontrado";
+        }
+
+    } catch (error) {
+        mostrarToast("Error al cargar datos ❌", "error");
+    }
+}
+
+// 💾 GUARDAR
+async function guardar() {
+
+    const btn = document.getElementById("btnGuardar");
+
+    const min = document.getElementById("min").value;
+    const max = document.getElementById("max").value;
+
+    if(min === "" || max === ""){
+        mostrarToast("Completa todos los campos ⚠️", "error");
+        return;
+    }
+
+    const data = {
+        id_sensor: idSensor,
+        limite_min: parseFloat(min),
+        limite_max: parseFloat(max)
+    };
+
+    try {
+
+        // 🔄 estado botón
+        btn.innerText = "Guardando...";
+        btn.disabled = true;
+
+        const res = await fetch(API, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        await res.json();
+
+        mostrarToast("Configuración guardada 🔥");
+
+    } catch (error) {
+        mostrarToast("Error al guardar ❌", "error");
+    }
+
+    // 🔁 restaurar botón
+    btn.innerText = "Guardar configuración";
+    btn.disabled = false;
+}
+
+
+cargar();
+
+</script>
+
+</body>
+</html>

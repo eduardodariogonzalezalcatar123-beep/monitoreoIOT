@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/style.css">
+<title>Dashboard Sensores</title>
+</head>
+
+<body>
+
+<header>
+<h1>Sistema de Monitoreo de Sensores</h1>
+</header>
+
+<div class="container">
+
+<!-- SENSOR 1 -->
+<div class="card">
+
+<h2>
+SENSOR 1 
+<span class="status normal" id="estado1">● NORMAL</span>
+</h2>
+
+<div class="value" id="valor1">-- °C</div>
+
+<canvas id="grafica1"></canvas>
+
+<p id="fecha1">Última lectura: --</p>
+
+<div class="buttons">
+
+<a href="pages/historial.html">
+<button class="btn">Ver Historial</button>
+</a>
+
+<a href="pages/configuracion.html?id=1">
+<button class="btn primary">Configurar</button>
+</a>
+
+</div>
+</div>
+
+
+<!-- SENSOR 2 -->
+<div class="card">
+
+<h2>
+SENSOR 2 
+<span class="status warning" id="estado2">● ADVERTENCIA</span>
+</h2>
+
+<div class="value" id="valor2">-- °C</div>
+
+<canvas id="grafica2"></canvas>
+
+<p id="fecha2">Última lectura: --</p>
+
+<div class="buttons">
+
+<a href="pages/historial.html">
+<button class="btn">Ver Historial</button>
+</a>
+
+<a href="pages/configuracion.html?id=2">
+<button class="btn primary">Configurar</button>
+</a>
+
+</div>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById("grafica1");
+
+const grafica1 = new Chart(ctx, {
+type: "line",
+data: {
+labels: ["10:00","10:05","10:10","10:15","10:20"],
+datasets: [{
+label: "Sensor 1",
+data: [70,72,74,75,73],
+borderColor: "#16A34A",
+fill: false
+}]
+},
+options: {
+responsive: true
+}
+});
+
+const ctx2 = document.getElementById("grafica2");
+
+const grafica2 = new Chart(ctx2, {
+type: "line",
+data: {
+labels: ["10:00","10:05","10:10","10:15","10:20"],
+datasets: [{
+label: "Sensor 2",
+data: [85,88,90,92,91],
+borderColor: "#F97316",
+fill: false
+}]
+}
+});
+
+async function cargarDashboard(){
+
+try{
+
+const res = await fetch("http://localhost:8080/api/dashboard.php");
+
+const data = await res.json();
+
+document.getElementById("valor1").innerText =
+data[0].ultima_lectura + " °C";
+
+document.getElementById("valor2").innerText =
+data[1].ultima_lectura + " °C";
+
+document.getElementById("estado1").innerText =
+"● " + data[0].estado_actual;
+
+document.getElementById("estado2").innerText =
+"● " + data[1].estado_actual;
+
+document.getElementById("fecha1").innerText =
+"Última lectura: " + (data[0].ultima_fecha ?? "Sin datos");
+
+document.getElementById("fecha2").innerText =
+"Última lectura: " + (data[1].ultima_fecha ?? "Sin datos");
+
+}
+catch(error){
+
+console.log("Error cargando dashboard", error);
+
+}
+
+}
+
+cargarDashboard();
+
+/* actualizar cada 5 segundos */
+setInterval(cargarDashboard,5000);
+
+</script>
+
+</body>
+</html>

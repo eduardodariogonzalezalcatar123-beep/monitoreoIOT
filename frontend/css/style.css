@@ -1,0 +1,212 @@
+body{font-family:Inter,Arial,sans-serif;background:#F8FAFC;margin:0;padding:0}
+
+header{background:white;padding:20px 40px;border-bottom:1px solid #e5e7eb}
+header h1{margin:0;font-size:24px;color:#111827}
+
+/* DASHBOARD */
+
+.container{display:flex;gap:40px;padding:40px}
+
+.card{
+background:white;
+border:1px solid #e5e7eb;
+border-radius:16px;
+padding:20px;
+width:320px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08)
+}
+
+.card h2{margin:0;font-size:16px}
+
+.status{font-size:12px;font-weight:bold;margin-left:10px}
+.normal{color:#22C55E}
+.warning{color:#F97316}
+
+.value{
+font-size:32px;
+font-weight:bold;
+margin:10px 0
+}
+
+.graph{
+background:#F3F4F6;
+height:150px;
+border-radius:10px;
+margin:10px 0;
+display:flex;
+align-items:flex-end;
+padding:10px
+}
+
+.line{
+width:100%;
+height:60%;
+border-left:3px solid transparent;
+border-bottom:3px solid #16A34A;
+border-radius:2px
+}
+
+.buttons{display:flex;gap:10px;margin-top:10px}
+
+.btn{
+padding:8px 14px;
+border-radius:8px;
+font-size:14px;
+border:1px solid #e5e7eb;
+background:white;
+cursor:pointer
+}
+
+.btn.primary{
+background:#16A34A;
+color:white;
+border:none
+}
+
+.btn.secondary{
+border:1px solid #16A34A;
+color:#16A34A;
+background:white
+}
+
+/* CONFIG */
+
+.config-wrapper{
+display:flex;
+justify-content:center;
+padding:60px
+}
+
+.config-card{
+background:white;
+border:1px solid #e5e7eb;
+border-radius:16px;
+padding:30px;
+width:420px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08)
+}
+
+.field{margin-bottom:20px}
+
+.label{
+font-size:14px;
+color:#374151;
+margin-bottom:6px
+}
+
+.inputs{
+display:flex;
+gap:10px
+}
+
+input{
+padding:10px;
+border-radius:8px;
+border:1px solid #d1d5db;
+font-size:14px;
+width:100%
+}
+
+/* === ALERTA EN EL CENTRO (CORRECCIÓN) === */
+
+#toast {
+    /* Esto lo saca del flujo y lo pone flotando */
+    position: fixed; 
+    
+    /* Centrado perfecto */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    /* Diseño */
+    background: #111827; /* Gris oscuro casi negro */
+    color: white;
+    padding: 20px 40px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 9999;
+    
+    /* Oculto por defecto */
+    display: none;
+    text-align: center;
+    min-width: 200px;
+}
+
+/* Mostrar cuando se activa */
+#toast.show {
+    display: block !important;
+}
+
+/* Color rojo si es error */
+#toast.error {
+    background: #dc2626;
+}
+
+/* HISTORIAL */
+
+.historial-container{
+padding:40px
+}
+
+.historial-card{
+background:white;
+border:1px solid #e5e7eb;
+border-radius:16px;
+padding:24px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08)
+}
+
+.historial-card h2{
+margin-top:0
+}
+
+.filtros{
+display:flex;
+gap:12px;
+margin-bottom:20px
+}
+
+select{
+padding:10px;
+border-radius:8px;
+border:1px solid #d1d5db
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:14px
+}
+
+thead tr{
+background:#F3F4F6;
+text-align:left
+}
+
+th{
+padding:10px
+}
+
+td{
+padding:10px
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:14px
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #e5e7eb
+}
+
+th{
+background:#F3F4F6;
+text-align:left
+}
