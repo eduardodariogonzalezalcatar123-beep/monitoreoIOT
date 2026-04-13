@@ -14,6 +14,10 @@
 
 <div class="container">
 
+    <div id="alerta-global" style="display: none; width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 1.2rem;">
+       ⚠️ AVISO: <span id="mensaje-alerta"></span>
+    </div>
+
 <!-- SENSOR 1 -->
 <div class="card">
 
@@ -106,39 +110,61 @@ fill: false
 }
 });
 
-async function cargarDashboard(){
+async function cargarDashboard() {
+    try {
+        const res = await fetch("http://localhost:8080/api/dashboard.php");
+        const data = await res.json();
+        console.log("Datos recibidos:", data);
 
-try{
+        const banner = document.getElementById("alerta-global");
+        const mensaje = document.getElementById("mensaje-alerta");
+        
+        let alertaActiva = false;
+        let textoAlerta = "";
+        let colorAlerta = "";
 
-const res = await fetch("http://localhost:8080/api/dashboard.php");
+        data.forEach((sensor, index) => {
+            const idNum = index + 1;
+            
+            // Forzamos la conversión a número y limpiamos posibles espacios
+            const lectura = Number(sensor.ultima_lectura);
+            const min = Number(sensor.limite_min);
+            const max = Number(sensor.limite_max);
 
-const data = await res.json();
+            console.log(`Sensor ${idNum}: Valor=${lectura}, Max=${max}, ¿Supera?: ${lectura > max}`);
 
-document.getElementById("valor1").innerText =
-data[0].ultima_lectura + " °C";
+            // Actualizar interfaz
+            if(document.getElementById(`valor${idNum}`)) {
+                document.getElementById(`valor${idNum}`).innerText = lectura + " °C";
+                document.getElementById(`estado${idNum}`).innerText = "● " + (sensor.estado_actual || "").toUpperCase();
+                document.getElementById(`fecha${idNum}`).innerText = "Última lectura: " + (sensor.ultima_fecha || "--");
+            }
 
-document.getElementById("valor2").innerText =
-data[1].ultima_lectura + " °C";
+            // Lógica de Alerta
+            if (lectura > max) {
+                alertaActiva = true;
+                textoAlerta += `⚠️ ${sensor.nombre}: CRÍTICO (${lectura}°C > ${max}°C) `;
+                colorAlerta = "#EF4444"; 
+            } else if (lectura < min) {
+                alertaActiva = true;
+                textoAlerta += `❄️ ${sensor.nombre}: BAJO (${lectura}°C < ${min}°C) `;
+                if (!colorAlerta) colorAlerta = "#3B82F6";
+            }
+        });
 
-document.getElementById("estado1").innerText =
-"● " + data[0].estado_actual;
+        // SALIMOS DEL BUCLE Y DECIDIMOS
+        if (alertaActiva) {
+            mensaje.innerText = textoAlerta;
+            banner.style.backgroundColor = colorAlerta;
+            banner.style.color = "white";
+            banner.style.display = "block";
+        } else {
+            banner.style.display = "none";
+        }
 
-document.getElementById("estado2").innerText =
-"● " + data[1].estado_actual;
-
-document.getElementById("fecha1").innerText =
-"Última lectura: " + (data[0].ultima_fecha ?? "Sin datos");
-
-document.getElementById("fecha2").innerText =
-"Última lectura: " + (data[1].ultima_fecha ?? "Sin datos");
-
-}
-catch(error){
-
-console.log("Error cargando dashboard", error);
-
-}
-
+    } catch (error) {
+        console.error("Error al conectar con la base de datos:", error);
+    }
 }
 
 cargarDashboard();
